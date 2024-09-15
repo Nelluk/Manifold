@@ -86,8 +86,8 @@ class Manifold(callbacks.Plugin):
                 
                 log.debug(f"Manifold: Sending IRC reply: {output}")
                 
-                # Use private=True to trigger Limnoria's message splitting
-                irc.reply(output, prefixNick=False, private=True)
+                # Reply in the same channel, with prefix
+                irc.reply(output)
             else:
                 irc.reply("Unable to fetch odds or no valid data found.")
         except Exception as e:
