@@ -39,6 +39,7 @@ class Manifold(callbacks.Plugin):
         market = search_data[0]
         title = market['question']
         volume = market['volume']
+        bettors = market['uniqueBettorCount']
         
         if market['outcomeType'] == 'BINARY':
             # Simple yes/no market
@@ -64,7 +65,8 @@ class Manifold(callbacks.Plugin):
         result = {
             'title': title,
             'data': data,
-            'volume': volume
+            'volume': volume,
+            'bettors': bettors
         }
         
         log.debug(f"Manifold: Parsed market data: {result}")
@@ -90,7 +92,7 @@ class Manifold(callbacks.Plugin):
                     volume_str = f"{volume:.0f}"
 
                 # Format output
-                output = f"\x02{result['title']}\x02 (Volume: {volume_str}): "
+                output = f"\x02{result['title']}\x02 (Volume: {volume_str}, Bettors: {result['bettors']}): "
                 output += " | ".join([f"{outcome}: \x02{probability:.1%}\x02" for outcome, probability, _ in result['data']])
                 
                 log.debug(f"Manifold: Sending IRC reply: {output}")
