@@ -1,72 +1,76 @@
-# Polymarket Supybot Plugin
+# Manifold Supybot Plugin
 
-This plugin for Supybot (Limnoria) allows users to fetch and display current odds from Polymarket directly in IRC channels.
+This plugin for Supybot (Limnoria) allows users to fetch and display current odds from Manifold.markets directly in IRC channels.
 
 ## Features
 
-- Fetch odds for specific Polymarket events using URLs
-- Search for Polymarket events using keywords
+- Fetch odds for specific Manifold.markets events using URLs or search terms
 - Display top outcomes with probabilities
-- Support for both Yes/No markets and markets with custom outcomes
+- Show market volume and number of unique bettors
+- Support for both binary (Yes/No) markets and markets with multiple outcomes
+- Provide direct link to the market
 
 ## Installation
 
 1. Ensure you have Supybot (Limnoria) installed and configured.
 
-2. Clone this repository and place the resulting 'Polymarket' directory in your Supybot plugins directory. The path typically looks like this:
+2. Clone this repository and place the resulting 'Manifold' directory in your Supybot plugins directory. The path typically looks like this:
    ```
-   /path/to/your/supybot/plugins/Polymarket/plugin.py
+   /path/to/your/supybot/plugins/Manifold/plugin.py
    ```
 
-4. Load the plugin in your Supybot instance:
+3. Load the plugin in your Supybot instance:
    ```
-   @load Polymarket
+   @load Manifold
    ```
 
 ## Usage
 
-The plugin provides a single command: `polymarket`
+The plugin provides a single command: `manifold`
 
 ### Syntax
 
 ```
-@polymarket <query>
+@manifold <query>
 ```
 
-Where `<query>` can be either a Polymarket URL or a search term.
+Where `<query>` can be either a Manifold.markets URL or a search term.
 
 ### Examples
 
 1. Fetching odds for a specific market using URL:
    ```
-   @polymarket https://polymarket.com/event/balance-of-power-2024-election
+   @manifold https://manifold.markets/user/market-slug
    ```
    Output:
    ```
-   Balance of Power: 2024 Election: Republicans sweep: 32.0% | D Prez, R Senate, D House: 28.0% | Democrats sweep: 21.0% | R Prez, R Senate, D House: 15.0% | D Prez, R Senate, R House: 5.2%
+   Market Title (Volume: 343k, Bettors: 150): Outcome1: 60.0% | Outcome2: 40.0% | https://manifold.markets/user/market-slug
    ```
 
 2. Searching for a market using keywords:
    ```
-   @polymarket nfl sunday
+   @manifold AI breakthrough 2023
    ```
    Output:
    ```
-   NFL Sunday: Packers vs Bears: 58.5% (Packers) | Cowboys vs Giants: 62.0% (Cowboys) | 49ers vs Rams: 55.0% (49ers)
+   Will there be a major AI breakthrough in 2023? (Volume: 50k, Bettors: 200): Yes: 30.0% | No: 70.0% | https://manifold.markets/user/will-there-be-a-major-ai-breakthrough
    ```
 
 ## Notes
 
 - The plugin will display up to 7 outcomes for each query, sorted by probability.
-- Only outcomes with at least 1% probability are shown.
-- For markets with custom outcomes (not Yes/No), the outcome name is displayed in parentheses.
+- For markets with multiple outcomes, all top outcomes are shown (up to the limit).
+- The output includes the market title, total volume, number of unique bettors, and a direct link to the market.
+- Volume is displayed in a simplified format (e.g., 343k for 343,000).
 
 ## Dependencies
 
 - requests
-- urllib
 
-These should be installed by default in most Python environments.
+This should be installed by default in most Python environments. If not, you can install it using pip:
+```
+pip install requests
+```
 
 ## Contributing
 
@@ -78,4 +82,4 @@ This project is licensed under the MIT License.
 
 ## Disclaimer
 
-This plugin is not officially associated with Polymarket. Use at your own risk and be aware of the terms of service of Polymarket when using this plugin.
+This plugin is not officially associated with Manifold.markets. Use at your own risk and be aware of the terms of service of Manifold.markets when using this plugin.
