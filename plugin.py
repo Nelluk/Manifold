@@ -38,11 +38,11 @@ class Manifold(callbacks.Plugin):
 
         market = search_data[0]
         title = market['question']
+        volume = market['volume']
         
         if market['outcomeType'] == 'BINARY':
             # Simple yes/no market
             probability = market['probability']
-            volume = market['volume']
             data = [('Yes', probability, volume)]
         else:
             # Multiple choice market
@@ -57,14 +57,14 @@ class Manifold(callbacks.Plugin):
             market_data = market_response.json()
             
             answers = market_data['answers']
-            data = [(answer['text'], answer['probability'], market['volume']) for answer in answers]
+            data = [(answer['text'], answer['probability'], volume) for answer in answers]
             data.sort(key=lambda x: x[1], reverse=True)
             data = data[:max_results]
 
         result = {
             'title': title,
             'data': data,
-            'volume': market['volume']
+            'volume': volume
         }
         
         log.debug(f"Manifold: Parsed market data: {result}")
@@ -80,14 +80,23 @@ class Manifold(callbacks.Plugin):
         try:
             result = self._fetch_manifold_data(query)
             if result['data']:
+                # Format volume
+                volume = result['volume']
+                if volume >= 1000000:
+                    volume_str = f"{volume/1000000:.0f}M"
+                elif volume >= 1000:
+                    volume_str = f"{volume/1000:.0f}k"
+                else:
+                    volume_str = f"{volume:.0f}"
+
                 # Format output
-                output = f"\x02{result['title']}\x02 (Volume: ${result['volume']:,.0f}): "
+                output = f"\x02{result['title']}\x02 (Volume: {volume_str}): "
                 output += " | ".join([f"{outcome}: \x02{probability:.1%}\x02" for outcome, probability, _ in result['data']])
                 
                 log.debug(f"Manifold: Sending IRC reply: {output}")
                 
-                # Reply in the same channel, with prefix
-                irc.reply(output)
+                # Reply in the same channel, without nick prefix
+                irc.reply(output, prefixNick=False)
             else:
                 irc.reply("Unable to fetch odds or no valid data found.")
         except Exception as e:
