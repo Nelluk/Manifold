@@ -38,12 +38,17 @@ class Manifold(callbacks.Plugin):
             return {'title': "No matching market found", 'data': []}
 
         market = search_data[0]
+        outcome_type = market['outcomeType']
+        
+        if outcome_type not in ['BINARY', 'MULTIPLE_CHOICE']:
+            return {'title': "Unsupported market type", 'data': []}
+
         title = market['question']
         volume = market['volume']
         bettors = market['uniqueBettorCount']
         url = market['url']
         
-        if market['outcomeType'] == 'BINARY':
+        if outcome_type == 'BINARY':
             # Simple yes/no market
             probability = market['probability']
             data = [('Yes', probability, volume)]
