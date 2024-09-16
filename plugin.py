@@ -7,6 +7,7 @@ import supybot.log as log
 import requests
 import json
 from urllib.parse import quote
+import pyshorteners
 
 class Manifold(callbacks.Plugin):
     """Fetches and displays odds from Manifold.markets"""
@@ -93,10 +94,14 @@ class Manifold(callbacks.Plugin):
                 else:
                     volume_str = f"{volume:.0f}"
 
+                # Shorten the URL
+                s = pyshorteners.Shortener()
+                short_url = s.tinyurl.short(result['url'])
+
                 # Format output
                 output = f"\x02{result['title']}\x02 (Volume: {volume_str}, Bettors: {result['bettors']}): "
                 output += " | ".join([f"{outcome}: \x02{probability:.1%}\x02" for outcome, probability, _ in result['data']])
-                output += f" | {result['url']}"
+                output += f" | {short_url}"
                 
                 log.debug(f"Manifold: Sending IRC reply: {output}")
                 
