@@ -85,21 +85,21 @@ class Manifold(callbacks.Plugin):
         try:
             result = self._fetch_manifold_data(query)
             if result['data']:
-                # Format volume
-                volume = result['volume']
-                if volume >= 1000000:
-                    volume_str = f"{volume/1000000:.0f}M"
-                elif volume >= 1000:
-                    volume_str = f"{volume/1000:.0f}k"
-                else:
-                    volume_str = f"{volume:.0f}"
+                # # Format volume (currently unused)
+                # volume = result['volume']
+                # if volume >= 1000000:
+                #     volume_str = f"{volume/1000000:.0f}M"
+                # elif volume >= 1000:
+                #     volume_str = f"{volume/1000:.0f}k"
+                # else:
+                #     volume_str = f"{volume:.0f}"
 
                 # Shorten the URL
                 s = pyshorteners.Shortener()
                 short_url = s.tinyurl.short(result['url'])
 
                 # Format output
-                output = f"\x02{result['title']}\x02 (Volume: {volume_str}, Bettors: {result['bettors']}): "
+                output = f"\x02{result['title']}\x02: "
                 output += " | ".join([f"{outcome}: \x02{probability:.1%}\x02" for outcome, probability, _ in result['data']])
                 output += f" | {short_url}"
                 
