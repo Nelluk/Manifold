@@ -65,6 +65,19 @@ class Manifold(callbacks.Plugin):
             market_data = market_response.json()
             
             answers = market_data['answers']
+            
+            # Filter out resolved answers if conditions are met
+            if len(answers) > 10:
+                filtered_answers = [
+                    answer for answer in answers
+                    if (answer['probability'] not in (0, 1) or
+                        answer['probChanges']['week'] != 0)
+                ]
+                
+                # If we filtered out all answers, fall back to the original list
+                if filtered_answers:
+                    answers = filtered_answers
+            
             data = [(answer['text'], answer['probability'], volume) for answer in answers]
             data.sort(key=lambda x: x[1], reverse=True)
             data = data[:max_results]
