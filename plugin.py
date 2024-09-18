@@ -71,7 +71,7 @@ class Manifold(callbacks.Plugin):
                 filtered_answers = [
                     answer for answer in answers
                     if (answer['probability'] not in (0, 1) or
-                        answer['probChanges']['week'] != 0)
+                        answer['probChanges']['day'] != 0)
                 ]
                 
                 # If we filtered out all answers, fall back to the original list
