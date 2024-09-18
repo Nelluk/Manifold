@@ -66,21 +66,28 @@ class Manifold(callbacks.Plugin):
             
             answers = market_data['answers']
             
-            # Filter out resolved answers if conditions are met
-            if len(answers) > 10:
-                filtered_answers = [
-                    answer for answer in answers
-                    if (answer['probability'] not in (0, 1) or
-                        answer['probChanges']['day'] != 0)
-                ]
+            def answer_score(answer):
+                prob = answer['probability']
+                prob_change = answer['probChanges']['day']
                 
-                # If we filtered out all answers, fall back to the original list
-                if filtered_answers:
-                    answers = filtered_answers
+                # Prioritize unresolved answers (upcoming games)
+                if 'resolution' not in answer:
+                    return 3
+                
+                # Recent results (with probability changes in the last day)
+                if prob_change != 0:
+                    return 2
+                
+                # Older results
+                return 1
+
+            # Sort answers by score (descending) and then by probability (descending)
+            sorted_answers = sorted(answers, key=lambda x: (-answer_score(x), -x['probability']))
             
-            data = [(answer['text'], answer['probability'], volume) for answer in answers]
-            data.sort(key=lambda x: x[1], reverse=True)
-            data = data[:max_results]
+            # Take top max_results
+            top_answers = sorted_answers[:max_results]
+            
+            data = [(answer['text'], answer['probability'], volume) for answer in top_answers]
 
         result = {
             'title': title,
