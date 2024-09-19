@@ -81,12 +81,15 @@ class Manifold(callbacks.Plugin):
                 # Older results
                 return 1
 
+            # Filter answers with at least 1% probability
+            valid_answers = [a for a in answers if a['probability'] >= 0.01]
+
             # Sort answers by score (descending) and then by probability (descending)
-            sorted_answers = sorted(answers, key=lambda x: (-answer_score(x), -x['probability']))
-            
+            sorted_answers = sorted(valid_answers, key=lambda x: (-answer_score(x), -x['probability']))
+
             # Take top max_results
             top_answers = sorted_answers[:max_results]
-            
+
             data = [(answer['text'], answer['probability'], volume) for answer in top_answers]
 
         result = {
