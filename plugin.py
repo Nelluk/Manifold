@@ -124,20 +124,18 @@ class Manifold(callbacks.Plugin):
                 #     volume_str = f"{volume:.0f}"
 
                 # Shorten the URL
-                s = pyshorteners.Shortener()
-                short_url = s.tinyurl.short(result['url'])
+
                 try:
-                    shortener = pyshorteners.Shortener(timeout=5)  # Increase timeout to 5 seconds
-                    short_url = shortener.tinyurl.short(result['url'])
-                    output += f" | {short_url}"
+                    shortener = pyshorteners.Shortener(timeout=5)
+                    printed_url = shortener.tinyurl.short(result['url'])
                 except (Timeout, ConnectionError, pyshorteners.exceptions.ShorteningErrorException) as e:
                     log.warning(f"URL shortening failed: {str(e)}. Using full URL.")
-                    output += f" | {result['url']}"
+                    printed_url = result['url']
 
                 # Format output
                 output = f"\x02{result['title']}\x02: "
                 output += " | ".join([f"{outcome}: \x02{probability:.1%}\x02" for outcome, probability, _ in result['data']])
-                output += f" | {short_url}"
+                output += f" | {printed_url}"
                 
                 log.debug(f"Manifold: Sending IRC reply: {output}")
                 
