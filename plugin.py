@@ -8,6 +8,7 @@ import requests
 import json
 from urllib.parse import quote
 import pyshorteners
+from requests.exceptions import Timeout, ConnectionError
 
 class Manifold(callbacks.Plugin):
     """Fetches and displays odds from Manifold.markets"""
@@ -125,6 +126,13 @@ class Manifold(callbacks.Plugin):
                 # Shorten the URL
                 s = pyshorteners.Shortener()
                 short_url = s.tinyurl.short(result['url'])
+                try:
+                    shortener = pyshorteners.Shortener(timeout=5)  # Increase timeout to 5 seconds
+                    short_url = shortener.tinyurl.short(result['url'])
+                    output += f" | {short_url}"
+                except (Timeout, ConnectionError, pyshorteners.exceptions.ShorteningErrorException) as e:
+                    log.warning(f"URL shortening failed: {str(e)}. Using full URL.")
+                    output += f" | {result['url']}"
 
                 # Format output
                 output = f"\x02{result['title']}\x02: "
